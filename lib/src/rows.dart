@@ -196,7 +196,8 @@ List<List<VirtualKeyboardKey>> _getKeyboardRows() {
 }
 
 /// Returns a list of VirtualKeyboard rows with `VirtualKeyboardKey` objects.
-List<List<VirtualKeyboardKey>> _getKeyboardRowsNumeric() {
+List<List<VirtualKeyboardKey>> _getKeyboardRowsNumeric(
+    {bool noFraction = false, bool returnAction = false}) {
   // Generate lists for each keyboard row.
   return List.generate(_keyRowsNumeric.length, (int rowNum) {
     // Will contain the keyboard row keys.
@@ -205,15 +206,33 @@ List<List<VirtualKeyboardKey>> _getKeyboardRowsNumeric() {
     // We have to add Action keys to keyboard.
     switch (rowNum) {
       case 3:
-        // String keys.
-        rowKeys.addAll(_getKeyboardRowKeysNumeric(rowNum));
+        final backspaceKey = VirtualKeyboardKey(
+            keyType: VirtualKeyboardKeyType.Action,
+            action: VirtualKeyboardKeyAction.Backspace);
 
-        // Right Shift
-        rowKeys.add(
-          VirtualKeyboardKey(
-              keyType: VirtualKeyboardKeyType.Action,
-              action: VirtualKeyboardKeyAction.Backspace),
-        );
+        final returnKey = VirtualKeyboardKey(
+            keyType: VirtualKeyboardKeyType.Action,
+            action: VirtualKeyboardKeyAction.Return);
+
+        final others = _getKeyboardRowKeysNumeric(rowNum)
+            .where((i) => !noFraction || i.text != ".");
+        if (noFraction) {
+          if (returnAction) {
+            rowKeys.add(backspaceKey);
+            rowKeys.addAll(others);
+            rowKeys.add(returnKey);
+          } else {
+            rowKeys.addAll(others);
+            rowKeys.add(backspaceKey);
+          }
+        } else {
+          rowKeys.addAll(others);
+          rowKeys.add(backspaceKey);
+          if (returnAction) {
+            rowKeys.add(returnKey);
+          }
+        }
+
         break;
       default:
         rowKeys = _getKeyboardRowKeysNumeric(rowNum);

@@ -23,6 +23,8 @@ class VirtualKeyboard extends StatefulWidget {
   /// Font size for keyboard keys.
   final double fontSize;
 
+  final bool noNumericFraction, numericReturnAction;
+
   /// The builder function will be called for each Key object.
   final Widget Function(BuildContext context, VirtualKeyboardKey key) builder;
 
@@ -37,7 +39,9 @@ class VirtualKeyboard extends StatefulWidget {
       this.height = _virtualKeyboardDefaultHeight,
       this.textColor = Colors.black,
       this.fontSize = 14,
-      this.alwaysCaps = false})
+      this.alwaysCaps = false,
+      this.noNumericFraction = false,
+      this.numericReturnAction = false})
       : super(key: key);
 
   @override
@@ -56,6 +60,8 @@ class _VirtualKeyboardState extends State<VirtualKeyboard> {
   Color textColor;
   double fontSize;
   bool alwaysCaps;
+  bool noNumericFraction, numericReturnAction;
+
   // Text Style for keys.
   TextStyle textStyle;
 
@@ -72,6 +78,8 @@ class _VirtualKeyboardState extends State<VirtualKeyboard> {
       textColor = widget.textColor;
       fontSize = widget.fontSize;
       alwaysCaps = widget.alwaysCaps;
+      noNumericFraction = widget.noNumericFraction;
+      numericReturnAction = widget.numericReturnAction;
 
       // Init the Text Style for keys.
       textStyle = TextStyle(
@@ -91,7 +99,8 @@ class _VirtualKeyboardState extends State<VirtualKeyboard> {
     textColor = widget.textColor;
     fontSize = widget.fontSize;
     alwaysCaps = widget.alwaysCaps;
-
+    noNumericFraction = widget.noNumericFraction;
+    numericReturnAction = widget.numericReturnAction;
     // Init the Text Style for keys.
     textStyle = TextStyle(
       fontSize: fontSize,
@@ -123,17 +132,22 @@ class _VirtualKeyboardState extends State<VirtualKeyboard> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: _rows(),
+        children: _rows(
+            noNumericFraction: noNumericFraction,
+            numericReturnAction: numericReturnAction),
       ),
     );
   }
 
   /// Returns the rows for keyboard.
-  List<Widget> _rows() {
+  List<Widget> _rows(
+      {bool noNumericFraction = false, bool numericReturnAction = false}) {
     // Get the keyboard Rows
     List<List<VirtualKeyboardKey>> keyboardRows =
         type == VirtualKeyboardType.Numeric
-            ? _getKeyboardRowsNumeric()
+            ? _getKeyboardRowsNumeric(
+                noFraction: noNumericFraction,
+                returnAction: numericReturnAction)
             : _getKeyboardRows();
 
     // Generate keyboard row.
