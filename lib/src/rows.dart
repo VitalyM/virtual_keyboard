@@ -197,7 +197,7 @@ List<List<VirtualKeyboardKey>> _getKeyboardRows() {
 
 /// Returns a list of VirtualKeyboard rows with `VirtualKeyboardKey` objects.
 List<List<VirtualKeyboardKey>> _getKeyboardRowsNumeric(
-    {bool noFraction = false, bool returnAction = false}) {
+    {bool noFraction = false, bool returnAction = false, bool minus = false}) {
   // Generate lists for each keyboard row.
   return List.generate(_keyRowsNumeric.length, (int rowNum) {
     // Will contain the keyboard row keys.
@@ -215,7 +215,16 @@ List<List<VirtualKeyboardKey>> _getKeyboardRowsNumeric(
             action: VirtualKeyboardKeyAction.Return);
 
         final others = _getKeyboardRowKeysNumeric(rowNum)
-            .where((i) => !noFraction || i.text != ".");
+            .where((i) => !noFraction || i.text != ".")
+            .toList();
+        
+        if (minus) {
+          others.add(VirtualKeyboardKey(
+              keyType: VirtualKeyboardKeyType.String,
+              text: "-",
+              capsText: "-"));
+        }
+
         if (noFraction) {
           if (returnAction) {
             rowKeys.add(backspaceKey);
